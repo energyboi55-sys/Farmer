@@ -8,6 +8,34 @@ FarmerUI.__index = FarmerUI
 -- Base Window
 function FarmerUI.new(title: string)
     local self = setmetatable({}, FarmerUI)
+
+self.ScreenGui = Instance.new("ScreenGui", CoreGui)
+    self.ScreenGui.Name = title
+    self.ScreenGui.IgnoreGuiInset = true
+    
+    self.MainFrame = Instance.new("Frame", self.ScreenGui)
+    self.MainFrame.Size = UDim2.new(0, 300, 0, 200)
+    self.MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    self.MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    self.MainFrame.Active = true
+    self.MainFrame.Draggable = true
+    Instance.new("UICorner", self.MainFrame).CornerRadius = UDim.new(0, 8)
+    
+    function FarmerUI:AddToggleBtn()
+    local ToggleBtn = Instance.new("TextButton", self.ScreenGui)
+    ToggleBtn.Size = UDim2.new(0, 40, 0, 40)
+    ToggleBtn.Position = UDim2.new(0, 10, 1, -50)
+    ToggleBtn.Text = "O"
+    ToggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    ToggleBtn.TextColor3 = Color3.fromRGB(0, 200, 200)
+    Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 8)
+    
+    ToggleBtn.MouseButton1Click:Connect(function()
+        self.MainFrame.Visible = not self.MainFrame.Visible
+    end)
+    return ToggleBtn
+end
+
     
     self.ScreenGui = Instance.new("ScreenGui", CoreGui)
     self.ScreenGui.Name = title

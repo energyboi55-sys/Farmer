@@ -1,6 +1,9 @@
--- FarmerUI Pro v1.8 - Final Tabs + Resizer
+-- FarmerUI Pro v1.9 - Final Resizer
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
+
+local DEFAULT_SIZE = Vector2.new(300, 200)
+local MAX_SIZE = DEFAULT_SIZE * 3.25
 
 local ScreenGui = Instance.new("ScreenGui", CoreGui)
 ScreenGui.Name = "FarmerUI"
@@ -17,7 +20,7 @@ Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 8)
 
 -- Main
 local Frame = Instance.new("Frame", ScreenGui)
-Frame.Size = UDim2.new(0, 300, 0, 200)
+Frame.Size = UDim2.new(0, DEFAULT_SIZE.X, 0, DEFAULT_SIZE.Y)
 Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
 Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 Frame.Active = true
@@ -26,7 +29,7 @@ Instance.new("UICorner", Frame)
 
 ToggleBtn.MouseButton1Click:Connect(function() Frame.Visible = not Frame.Visible end)
 
--- Resizer
+-- Resizer (Tiny tab bottom right)
 local Resizer = Instance.new("TextButton", Frame)
 Resizer.Size = UDim2.new(0, 20, 0, 20)
 Resizer.Position = UDim2.new(1, -20, 1, -20)
@@ -43,7 +46,7 @@ UserInputService.InputChanged:Connect(function(input)
     if resizing and input.UserInputType == Enum.UserInputType.MouseMovement then
         local mousePos = UserInputService:GetMouseLocation()
         local newSize = Vector2.new(mousePos.X - Frame.AbsolutePosition.X, mousePos.Y - Frame.AbsolutePosition.Y)
-        Frame.Size = UDim2.new(0, math.clamp(newSize.X, 150, 600), 0, math.clamp(newSize.Y, 100, 600))
+        Frame.Size = UDim2.new(0, math.clamp(newSize.X, 150, MAX_SIZE.X), 0, math.clamp(newSize.Y, 100, MAX_SIZE.Y))
     end
 end)
 
@@ -82,7 +85,7 @@ end
 local tab1 = AddTab("Main")
 local tab2 = AddTab("Settings")
 
--- Toggle
+-- Toggle example
 local toggle = Instance.new("TextButton", tab1)
 toggle.Size = UDim2.new(0.9, 0, 0, 30)
 toggle.Position = UDim2.new(0.05, 0, 0, 10)

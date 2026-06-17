@@ -1,14 +1,12 @@
--- FarmerUI.lua
+-- FarmerUI.lua (Updated with Button/Slider)
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
 local FarmerUI = {}
 FarmerUI.__index = FarmerUI
 
--- Base Window
 function FarmerUI.new(title: string)
     local self = setmetatable({}, FarmerUI)
-
     self.ScreenGui = Instance.new("ScreenGui", CoreGui)
     self.ScreenGui.Name = title
     self.ScreenGui.IgnoreGuiInset = true
@@ -21,32 +19,9 @@ function FarmerUI.new(title: string)
     self.MainFrame.Draggable = true
     Instance.new("UICorner", self.MainFrame).CornerRadius = UDim.new(0, 8)
 
-    -- Resizer
-    local Resizer = Instance.new("TextButton", self.MainFrame)
-    Resizer.Size = UDim2.new(0, 20, 0, 20)
-    Resizer.Position = UDim2.new(1, -20, 1, -20)
-    Resizer.Text = "◢"
-    Resizer.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    Instance.new("UICorner", Resizer)
-
-    local resizing = false
-    Resizer.MouseButton1Down:Connect(function() resizing = true end)
-    UserInputService.InputEnded:Connect(function(input) 
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then resizing = false end 
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if resizing and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local mousePos = UserInputService:GetMouseLocation()
-            local newSize = Vector2.new(mousePos.X - self.MainFrame.AbsolutePosition.X, mousePos.Y - self.MainFrame.AbsolutePosition.Y)
-            self.MainFrame.Size = UDim2.new(0, math.clamp(newSize.X, 150, 975), 0, math.clamp(newSize.Y, 100, 650))
-        end
-    end)
-
     self.TabContainer = Instance.new("Frame", self.MainFrame)
     self.TabContainer.Size = UDim2.new(1, 0, 0, 30)
     self.TabContainer.BackgroundTransparency = 1
-
     return self
 end
 
@@ -58,7 +33,6 @@ function FarmerUI:AddToggleBtn()
     ToggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     ToggleBtn.TextColor3 = Color3.fromRGB(0, 200, 200)
     Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 8)
-
     ToggleBtn.MouseButton1Click:Connect(function()
         self.MainFrame.Visible = not self.MainFrame.Visible
     end)
@@ -79,18 +53,15 @@ function FarmerUI:AddTab(name: string)
     btn.Text = name
     btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     Instance.new("UICorner", btn)
-
     btn.MouseButton1Click:Connect(function()
         for _, v in pairs(self.MainFrame:GetChildren()) do
             if v:IsA("ScrollingFrame") then v.Visible = false end
         end
         tab.Frame.Visible = true
     end)
-
     return tab
 end
 
--- Generators
 function FarmerUI:AddToggle(tab, text, callback)
     local state = false
     local btn = Instance.new("TextButton", tab.Frame)
@@ -105,16 +76,45 @@ function FarmerUI:AddToggle(tab, text, callback)
     end)
 end
 
+function FarmerUI:AddButton(tab, name, callback)
+    local btn = Instance.new("TextButton", tab.Frame)
+    btn.Size = UDim2.new(0.9, 0, 0, 30)
+    btn.Text = name
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Instance.new("UICorner", btn)
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
 function FarmerUI:AddSlider(tab, text, min, max, callback)
     local slider = Instance.new("Frame", tab.Frame)
     slider.Size = UDim2.new(0.9, 0, 0, 40)
     slider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Instance.new("UICorner", slider)
 
     local label = Instance.new("TextLabel", slider)
     label.Text = text
-    label.Size = UDim2.new(1, 0, 1, 0)
+    label.Size = UDim2.new(1, 0, 0.5, 0)
     label.BackgroundTransparency = 1
+    
+    local bar = Instance.new("Frame", slider)
+    bar.Size = UDim2.new(0.9, 0, 0, 5)
+    bar.Position = UDim2.new(0.05, 0, 0.6, 0)
+    bar.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    
+    local fill = Instance.new("Frame", bar)
+    fill.Size = UDim2.new(0, 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(0, 200, 200)
 
+    -- Simple slider logic
+    slider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+            local percent = math.clamp((mouse.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
+            fill.Size = UDim2.new(percent, 0, 1, 0)
+            callback(math.floor(min + (max - min) * percent))
+        end
+    end)
     return slider
 end
 

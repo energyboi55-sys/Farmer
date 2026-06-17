@@ -1,4 +1,4 @@
--- FarmerUI Pro v1.7 - Stable Tabs
+-- FarmerUI Pro v1.8 - Final Tabs + Resizer
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
@@ -25,6 +25,27 @@ Frame.Draggable = true
 Instance.new("UICorner", Frame)
 
 ToggleBtn.MouseButton1Click:Connect(function() Frame.Visible = not Frame.Visible end)
+
+-- Resizer
+local Resizer = Instance.new("TextButton", Frame)
+Resizer.Size = UDim2.new(0, 20, 0, 20)
+Resizer.Position = UDim2.new(1, -20, 1, -20)
+Resizer.Text = "◢"
+Resizer.TextColor3 = Color3.new(1, 1, 1)
+Resizer.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Instance.new("UICorner", Resizer)
+
+local resizing = false
+Resizer.MouseButton1Down:Connect(function() resizing = true end)
+UserInputService.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then resizing = false end end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if resizing and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local mousePos = UserInputService:GetMouseLocation()
+        local newSize = Vector2.new(mousePos.X - Frame.AbsolutePosition.X, mousePos.Y - Frame.AbsolutePosition.Y)
+        Frame.Size = UDim2.new(0, math.clamp(newSize.X, 150, 600), 0, math.clamp(newSize.Y, 100, 600))
+    end
+end)
 
 -- Tabs
 local TabContainer = Instance.new("Frame", Frame)
@@ -58,11 +79,10 @@ local function AddTab(name)
     return content
 end
 
--- Example Usage:
 local tab1 = AddTab("Main")
 local tab2 = AddTab("Settings")
 
--- Add a toggle to Main
+-- Toggle
 local toggle = Instance.new("TextButton", tab1)
 toggle.Size = UDim2.new(0.9, 0, 0, 30)
 toggle.Position = UDim2.new(0.05, 0, 0, 10)

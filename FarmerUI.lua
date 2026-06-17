@@ -29,7 +29,7 @@ function FarmerUI:CreateWindow(config)
     MainFrame.Size = UDim2.new(0, settings.Size[1], 0, settings.Size[2])
     MainFrame.Position = UDim2.new(settings.Pos[1], settings.Pos[2], settings.Pos[3], settings.Pos[4])
     MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    MainFrame.Active = true
+    MainFrame.Visible = true
     MainFrame.Draggable = true
     Instance.new("UICorner", MainFrame)
     

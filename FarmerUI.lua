@@ -1,40 +1,34 @@
--- FarmerUI Pro v3.2 - Toggle Fix + Visibility
+-- FarmerUI Pro v3.3 - Camera Bypass
 local UserInputService = game:GetService("UserInputService")
 local HttpService = game:GetService("HttpService")
-local CoreGui = game:GetService("CoreGui")
+local Camera = game:GetService("Workspace").CurrentCamera
 
 local FarmerUI = { Options = {}, Toggles = {} }
-local SAVE_FILE = "FarmerUI_Settings.json"
-local settings = {Size = {500, 400}, Pos = {0.5, -250, 0.5, -200}}
 
-if readfile and isfile and isfile(SAVE_FILE) then
-    pcall(function() settings = HttpService:JSONDecode(readfile(SAVE_FILE)) end)
-end
-
--- Use PlayerGui if CoreGui is blocked
-local ScreenGui = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"))
+-- Try parenting to Camera (often bypasses CoreGui protection)
+local ScreenGui = Instance.new("ScreenGui", Camera)
 ScreenGui.Name = "FarmerUI"
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.IgnoreGuiInset = true
 
 -- Mobile Toggle
 local ToggleBtn = Instance.new("TextButton", ScreenGui)
 ToggleBtn.Size = UDim2.new(0, 40, 0, 40)
 ToggleBtn.Position = UDim2.new(0, 10, 1, -50)
 ToggleBtn.Text = "O"
-ToggleBtn.ZIndex = 10
+ToggleBtn.ZIndex = 100
 ToggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 ToggleBtn.TextColor3 = Color3.fromRGB(0, 200, 200)
 Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 8)
 
 function FarmerUI:CreateWindow(config)
     local MainFrame = Instance.new("Frame", ScreenGui)
-    MainFrame.Size = UDim2.new(0, settings.Size[1], 0, settings.Size[2])
-    MainFrame.Position = UDim2.new(settings.Pos[1], settings.Pos[2], settings.Pos[3], settings.Pos[4])
+    MainFrame.Size = UDim2.new(0, 500, 0, 400)
+    MainFrame.Position = UDim2.new(0.5, -250, 0.5, -200)
     MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     MainFrame.Active = true
     MainFrame.Draggable = true
     MainFrame.Visible = true
-    MainFrame.ZIndex = 5
+    MainFrame.ZIndex = 99
     Instance.new("UICorner", MainFrame)
     
     ToggleBtn.MouseButton1Click:Connect(function() 

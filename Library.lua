@@ -1219,6 +1219,7 @@ local ScreenGui = New("ScreenGui", {
     Name = "Obsidian",
     DisplayOrder = 998,
     ResetOnSpawn = false,
+	IgnoreGuiInset = true
 })
 ParentUI(ScreenGui)
 Library.ScreenGui = ScreenGui
@@ -8639,11 +8640,10 @@ function Library:CreateWindow(WindowInfo)
             pcall(function()
                 RunService:UnbindFromRenderStep(ShowCursorBinding)
             end)
-            RunService:BindToRenderStep(ShowCursorBinding, Enum.RenderPriority.Last.Value, function()
-                UserInputService.MouseIconEnabled = not Library.ShowCustomCursor
-
-                local inset = game:GetService("GuiService"):GetGuiInset()  
-				Cursor.Position = UDim2.fromOffset(Mouse.X, Mouse.Y + inset.Y)
+            RunService:BindToRenderStep(ShowCursorBinding, Enum.RenderPriority.Last.Value, function()  
+    			UserInputService.MouseIconEnabled = not Library.ShowCustomCursor
+  
+				Cursor.Position = UDim2.fromOffset(Mouse.X, Mouse.Y)
                 Cursor.Visible = Library.ShowCustomCursor
 
                 if not (Library.Toggled and ScreenGui and ScreenGui.Parent) then
